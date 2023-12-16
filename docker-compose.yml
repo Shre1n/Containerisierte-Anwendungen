@@ -1,0 +1,52 @@
+version: '3.1'
+
+
+services:
+  db:
+    image: mariadb:10.6
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_USER_FILE: /run/secrets/rootUser
+      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/rootPass
+      MYSQL_USER_FILE: /run/secrets/user
+      MYSQL_PASSWORD: /run/secrets/pass
+    secrets:
+      - rootUser
+      - rootPass
+      - user
+      - pass
+    volumes:
+      - db_data:/var/lib/mysql:Z
+
+  phpmyadmin:
+    image: phpmyadmin:5.2.1-apache
+    restart: unless-stopped
+    container_name: db
+    environment:
+      - PMA_ARBITRARY=1
+    ports:
+      - "3306:3306"
+    networks:
+      - intern
+
+
+secrets:
+  rootUser:
+    file: ./secrets/rootUser.txt
+  rootPass:
+    file: ./secrets/rootPass.txt
+  user:
+    file: ./secrets/user.txt
+  pass:
+    file: ./secrets/pass.txt
+
+
+networks:
+  vueApp:
+    driver: bridge
+  intern:
+    driver: none
+
+
+volumes:
+   db_data:
