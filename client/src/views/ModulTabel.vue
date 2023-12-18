@@ -4,22 +4,24 @@ import {sharedStates} from "@/sharedStates";
 import {reactive} from "vue";
 
 const editInputs = reactive({
+  moduleId: 0,
   moduleName: "",
   moduleCrp: 0,
   moduleGrade: 0,
   moduleWeight: 0
 });
 
-function edit(moduleName: string) {
+
+function edit(id: number) {
   const module = sharedStates.moduleList.find((m) => {
-    return m.moduleName = moduleName
+    return m.id = id
   });
 
   if (!module) {
     console.log("module Not found");
     return
   }
-
+  editInputs.moduleId = module.id;
   editInputs.moduleName = module.moduleName;
   editInputs.moduleCrp = module.moduleCrp;
   editInputs.moduleGrade = module.moduleGrade;
@@ -29,22 +31,29 @@ function edit(moduleName: string) {
 
 }
 
-function remove(moduleName: string) {
+function remove(id: number) {
   sharedStates.moduleList = sharedStates.moduleList.filter((m) => {
-    return m.moduleName !== moduleName;
+    return m.id !== id;
   })
 }
 
 function saveChanges() {
-  sharedStates.formVisible = false
-  sharedStates.moduleList.forEach((_, i, modules) => {
-    if (modules[i].moduleName === editInputs.moduleName) {
-      modules[i].moduleName = editInputs.moduleName
-      modules[i].moduleCrp = editInputs.moduleCrp
-      modules[i].moduleGrade = editInputs.moduleGrade
-      modules[i].moduleWeight = editInputs.moduleWeight
-    }
-  })
+  sharedStates.formVisible = false;
+  const index = sharedStates.moduleList.findIndex(module => module.id === editInputs.moduleId);
+
+  if (index !== -1) {
+    sharedStates.moduleList[index] = {
+      ...sharedStates.moduleList[index],
+      moduleName: editInputs.moduleName,
+      moduleWeight: editInputs.moduleWeight,
+      moduleCrp: editInputs.moduleCrp,
+      moduleGrade: editInputs.moduleGrade,
+    };
+  } else {
+    console.log(`Module not found.`);
+  }
+
+  console.log(sharedStates.moduleList)
 }
 </script>
 
@@ -79,7 +88,7 @@ function saveChanges() {
               <label for="modulWeightInput" class="form-label">Modul Weight:</label>
               <input v-model="editInputs.moduleWeight" type="number" class="form-control" id="modulWeightInput">
             </div>
-            <button class="btn" type="submit">Übernehmen</button>
+            <button class="btn btn-primary" type="submit">Übernehmen</button>
           </form>
         </div>
         <table id="master-head" class="table mt-4">
@@ -93,14 +102,14 @@ function saveChanges() {
           </tr>
           </thead>
           <tbody>
-          <tr v-for="module in sharedStates.moduleList" :key="module.moduleName">
+          <tr v-for="module in sharedStates.moduleList" :key="module.id">
             <td>{{ module.moduleName }}</td>
             <td>{{ module.moduleCrp }}</td>
             <td>{{ module.moduleGrade }}%</td>
             <td>{{ module.moduleWeight }}</td>
             <td>
-              <button class="btn btn-primary mx-1" @click="edit(module.moduleName)">Editieren</button>
-              <button class="btn btn-danger mx-1" @click="remove(module.moduleName)">Löschen</button>
+              <button class="btn btn-primary mx-1" @click="edit(module.id)">Editieren</button>
+              <button class="btn btn-danger mx-1" @click="remove(module.id)">Löschen</button>
             </td>
           </tr>
           </tbody>
