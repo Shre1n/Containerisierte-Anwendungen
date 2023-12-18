@@ -1,0 +1,15 @@
+{
+  "moduleList": [
+    {"moduleName": "LA", "moduleCrp": 6, "moduleGrade": 67, "moduleWeight": 2},
+    {"moduleName": "Math", "moduleCrp": 4, "moduleGrade": 85, "moduleWeight": 3},
+    {"moduleName": "History", "moduleCrp": 3, "moduleGrade": 75, "moduleWeight": 1},
+    {"moduleName": "Physics", "moduleCrp": 5, "moduleGrade": 92, "moduleWeight": 4},
+    {"moduleName": "English", "moduleCrp": 4, "moduleGrade": 78, "moduleWeight": 2},
+    {"moduleName": "Computer Science", "moduleCrp": 5, "moduleGrade": 88, "moduleWeight": 3},
+    {"moduleName": "Chemistry", "moduleCrp": 4, "moduleGrade": 79, "moduleWeight": 2},
+    {"moduleName": "Economics", "moduleCrp": 3, "moduleGrade": 91, "moduleWeight": 1},
+    {"moduleName": "Art", "moduleCrp": 2, "moduleGrade": 70, "moduleWeight": 1},
+    {"moduleName": "Geography", "moduleCrp": 3, "moduleGrade": 83, "moduleWeight": 2},
+    {"moduleName": "Physical Education", "moduleCrp": 2, "moduleGrade": 95, "moduleWeight": 1}
+  ]
+}
