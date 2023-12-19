@@ -3,13 +3,14 @@ version: '3.1'
 
 services:
   db:
-    image: mariadb:10.6
+    image: mariadb:lts
     restart: unless-stopped
     environment:
       MYSQL_ROOT_USER_FILE: /run/secrets/rootUser
       MYSQL_ROOT_PASSWORD_FILE: /run/secrets/rootPass
       MYSQL_USER_FILE: /run/secrets/user
       MYSQL_PASSWORD: /run/secrets/pass
+      MYSQL_DATABASE: webappdb
     secrets:
       - rootUser
       - rootPass
@@ -17,18 +18,46 @@ services:
       - pass
     volumes:
       - db_data:/var/lib/mysql:Z
+    ports:
+      - "3306:3306"
 
   phpmyadmin:
     image: phpmyadmin:5.2.1-apache
     restart: unless-stopped
     container_name: db
     environment:
-      - PMA_ARBITRARY=1
+      PMA_HOST: db
+      PMA_PORT: 3306
     ports:
-      - "3306:3306"
+      - "3000:80"
     networks:
       - intern
 
+  frontend:
+    build:
+      context: ./client
+    ports:
+      - "8080:8080"
+
+  backend:
+    build:
+      context: ./server
+    ports:
+      - "8000:8000"
+    depends_on:
+      - frontend
+      - db
+    environment:
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_DATABASE: webappdb
+      DB_PASSWORD_FILE: run/secrets/pass
+      DB_USER_FILE: run/secrets/user
+      FRONTEND_HOST: frontend
+      FRONTEND_PORT: 8000
+    secrets:
+      - user
+      - pass
 
 secrets:
   rootUser:
