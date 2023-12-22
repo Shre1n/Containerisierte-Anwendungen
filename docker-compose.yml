@@ -4,12 +4,13 @@ version: '3.1'
 services:
   db:
     image: mariadb:lts
+    container_name: db
     restart: unless-stopped
     environment:
       MYSQL_ROOT_USER_FILE: /run/secrets/rootUser
       MYSQL_ROOT_PASSWORD_FILE: /run/secrets/rootPass
       MYSQL_USER_FILE: /run/secrets/user
-      MYSQL_PASSWORD: /run/secrets/pass
+      MYSQL_PASSWORD_FILE: /run/secrets/pass
       MYSQL_DATABASE: webappdb
     secrets:
       - rootUser
@@ -20,11 +21,13 @@ services:
       - db_data:/var/lib/mysql:Z
     ports:
       - "3306:3306"
+    networks:
+      - intern
 
   phpmyadmin:
     image: phpmyadmin:5.2.1-apache
     restart: unless-stopped
-    container_name: db
+    container_name: phpmyadmin
     environment:
       PMA_HOST: db
       PMA_PORT: 3306
@@ -38,6 +41,8 @@ services:
       context: ./client
     ports:
       - "8080:8080"
+    networks:
+      - intern
 
   backend:
     build:
@@ -58,6 +63,8 @@ services:
     secrets:
       - user
       - pass
+    networks:
+      - intern
 
 secrets:
   rootUser:
@@ -74,7 +81,7 @@ networks:
   vueApp:
     driver: bridge
   intern:
-    driver: none
+    driver: bridge
 
 
 volumes:

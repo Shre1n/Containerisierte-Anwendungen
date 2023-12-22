@@ -1,38 +1,37 @@
 import express = require ('express');
-import path from "path";
 import mysql from 'mysql2'
+import * as fs from 'fs'
+import path from 'path'
 
 
 
 const app = express();
 
-const frontendHost: string = process.env.FRONTEND_HOST;
-const frontendPort: string = process.env.FRONTEND_HOST;
 
-const appUrl: string = `http://${frontendHost}:${frontendPort}/`;
+const userPath = path.join(__dirname, "..", process.env.DB_USER_FILE);
+const passPath = path.join(__dirname, "..", process.env.DB_PASSWORD_FILE);
 
-
+const user = fs.readFileSync(userPath);
+const pass = fs.readFileSync(passPath);
 const db = mysql.createConnection({
     port: Number(process.env.DB_PORT),
     host: process.env.DB_HOST,
-    user: process.env.DB_USER_FILE,
-    password: process.env.DB_PASSWORD_FILE,
+    user: user.toString(),
+    password: pass.toString(),
     database: process.env.DB_DATABASE
 });
 
 app.listen(8000, () => {
-    db.connect((err) => {
-        if (err) {
-            console.log('Database connection failed: ', err);
-        } else {
-            console.log('Database is connected');
-        }
-    });
-
+    setTimeout(()=> {
+        db.connect((err) => {
+            if (err) {
+                console.log('Database connection failed: ', err);
+            } else {
+                console.log('Database is connected');
+            }
+        });
+    },3000)
     console.info('[Server]', 'Server started: http://localhost:8000');
 });
 
 app.use(express.json());
-
-
-app.use("/", express.static(appUrl));
