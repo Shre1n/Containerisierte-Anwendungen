@@ -5,8 +5,17 @@ import {sharedStates} from "@/sharedStates";
 import data from './testData.json'
 import type {Module} from "@/interfaces/Module";
 
-onMounted(()=> {
+onMounted(async () => {
   sharedStates.moduleList = data.moduleList as Module[];
+
+  try {
+    const res = await fetch("/api/test");
+    const data = await res.json();
+    console.log("WOWW:", data.message)
+  } catch (e) {
+    console.log("ERRRRORRRR:", e)
+  }
+
 })
 
 </script>

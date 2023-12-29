@@ -26,6 +26,6 @@ COPY --from=cache /app/node_modules ./node_modules
 COPY --from=compiler /app/*.js .
 COPY --from=compiler /app/*.json .
 
-EXPOSE 8080
+EXPOSE 8081
 
 CMD ["node", "server.js"]

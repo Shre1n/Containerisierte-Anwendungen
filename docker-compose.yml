@@ -31,26 +31,20 @@ services:
     environment:
       PMA_HOST: db
       PMA_PORT: 3306
-    ports:
-      - "3000:80"
+      PMA_ABSOLUTE_URI: "http://proxy:8000/pma/"
     networks:
       - intern
 
   frontend:
     build:
       context: ./client
-    ports:
-      - "8080:8080"
     networks:
       - intern
 
   backend:
     build:
       context: ./server
-    ports:
-      - "8000:8000"
     depends_on:
-      - frontend
       - db
     environment:
       DB_HOST: db
@@ -66,6 +60,19 @@ services:
     networks:
       - intern
 
+  proxy:
+    image: nginx:alpine
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - frontend
+      - backend
+      - db
+    networks:
+      - intern
+
 secrets:
   rootUser:
     file: ./secrets/rootUser.txt
@@ -78,8 +85,6 @@ secrets:
 
 
 networks:
-  vueApp:
-    driver: bridge
   intern:
     driver: bridge
 
