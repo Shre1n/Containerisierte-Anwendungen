@@ -18,7 +18,7 @@ services:
       - user
       - pass
     volumes:
-      - db_data:/var/lib/mysql:Z
+      - db_data:/var/lib/mysql
     ports:
       - "3306:3306"
     networks:
