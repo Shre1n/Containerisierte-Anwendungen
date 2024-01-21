@@ -6,12 +6,6 @@ import { Module } from "./Module";
 import session from "express-session";
 import {Request, Response, urlencoded} from 'express';
 
-
-
-
-
-
-
 const app = express();
 
 app.use(
