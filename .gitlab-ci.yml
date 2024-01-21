@@ -1,0 +1,9 @@
+docker-build:
+  # Use the official docker image.
+  image: docker:cli
+  stage: build
+  services:
+    - docker:dind
+  script:
+    - docker-compose build
+    - docker-compose push
