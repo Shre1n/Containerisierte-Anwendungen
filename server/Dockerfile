@@ -14,6 +14,7 @@ WORKDIR /app
 COPY --from=cache /app/node_modules ./node_modules
 
 COPY server.ts .
+COPY Module.ts .
 COPY tsconfig.json .
 COPY package.json .
 COPY package-lock.json .

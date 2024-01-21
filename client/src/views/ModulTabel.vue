@@ -2,6 +2,8 @@
 
 import {sharedStates} from "@/sharedStates";
 import {reactive} from "vue";
+import { deleteModule, getModule, postModule, putModule, renderModuleList } from "@/database.service";
+import type { PutModule } from "@/interfaces/PutModule";
 
 const editInputs = reactive({
   moduleId: 0,
@@ -12,10 +14,19 @@ const editInputs = reactive({
 });
 
 
-function edit(id: number) {
-  const module = sharedStates.moduleList.find((m) => {
-    return m.id = id
-  });
+function openAddModuleModal() {
+  editInputs.moduleId = 0;
+  editInputs.moduleName = "";
+  editInputs.moduleCrp = 0;
+  editInputs.moduleGrade = 0;
+  editInputs.moduleWeight = 0;
+
+  sharedStates.formVisible = true;
+}
+
+
+async function edit(id: number) {
+  const module = await getModule(id);
 
   if (!module) {
     console.log("module Not found");
@@ -31,30 +42,28 @@ function edit(id: number) {
 
 }
 
-function remove(id: number) {
-  sharedStates.moduleList = sharedStates.moduleList.filter((m) => {
-    return m.id !== id;
-  })
+async function remove(id: number) {
+  await deleteModule(id);
+  await renderModuleList();
 }
 
-function saveChanges() {
+async function saveChanges() {
   sharedStates.formVisible = false;
-  const index = sharedStates.moduleList.findIndex(module => module.id === editInputs.moduleId);
-
-  if (index !== -1) {
-    sharedStates.moduleList[index] = {
-      ...sharedStates.moduleList[index],
-      moduleName: editInputs.moduleName,
-      moduleWeight: editInputs.moduleWeight,
-      moduleCrp: editInputs.moduleCrp,
-      moduleGrade: editInputs.moduleGrade,
-    };
+  const updateData: PutModule = {
+    moduleCrp: editInputs.moduleCrp,
+    moduleGrade:  editInputs.moduleGrade,
+    moduleName: editInputs.moduleName,
+    moduleWeight: editInputs.moduleWeight
+  }
+  if (editInputs.moduleId === 0) {
+    await postModule(updateData);
   } else {
-    console.log(`Module not found.`);
+    await putModule(editInputs.moduleId, updateData);
   }
 
-  console.log(sharedStates.moduleList)
+  await renderModuleList();
 }
+
 </script>
 
 <template>
@@ -63,6 +72,7 @@ function saveChanges() {
       <div class="col-auto">
         <button class="btn btn-primary mx-1" >Speichern</button>
         <button class="btn btn-success mx-1" >Laden</button>
+        <button class="btn btn-success mx-1" @click="openAddModuleModal" >Modul hinzufügen</button>
       </div>
     </div>
     <div class="row justify-content-center mt-4">
@@ -71,7 +81,7 @@ function saveChanges() {
         <h6 class="card-subtitle mb-2">Informationen über belegte Module</h6>
 
         <div class="justify-content-center d-flex">
-          <form @submit.prevent="saveChanges" v-show="sharedStates.formVisible" style="max-width: 10em">
+          <form @submit.prevent="saveChanges" v-show="sharedStates.formVisible" style="max-width: 20em">
             <div class="mb-3">
               <label for="modulNameInput" class="form-label">Modul Name</label>
               <input v-model="editInputs.moduleName" type="text" class="form-control" id="modulNameInput">
