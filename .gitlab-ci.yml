@@ -4,8 +4,8 @@ stages:
 job-name1:
   stage: test
   tags: #wird genutzt um einen passenden Runner für den Job auszuwählen (siehe für weitere Details: .gitlab-ci.yml)
-    - docker
-  image: node:lts-bullseye-slim #Gibt das Image an, welche für den Jobs als "Basis" genutzt wird
+    - nodejs
+ 
   allow_failure: true #Gibt an, dass der Job fehlschlagen kann, ohne das die gesamte Pipeline als "failed" angesehen wird
   before_script: #wird vor dem "script" ausgeführt
     - cd client
@@ -14,7 +14,7 @@ job-name1:
 build-publish-docker-image:
   stage: build
   tags:
-    - docker
+    - kaniko
   image:
     name: gcr.io/kaniko-project/executor:debug
     entrypoint: [ "" ]
