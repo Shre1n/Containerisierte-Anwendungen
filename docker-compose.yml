@@ -13,8 +13,8 @@ services:
       MYSQL_PASSWORD_FILE: /run/secrets/pass
       MYSQL_DATABASE: webappdb
     healthcheck:
-      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
-      interval: 5s
+      test: ["CMD", "healthcheck.sh", "--su-mysql", "--connect", "--innodb_initialized"]
+      interval: 10s
       timeout: 5s
       retries: 20
     secrets:
@@ -61,11 +61,6 @@ services:
       DB_USER_FILE: run/secrets/user
       FRONTEND_HOST: frontend
       FRONTEND_PORT: 8000
-    healthcheck:
-      test: [ "CMD-SHELL", "curl --fail http://localhost:8000/health" ]
-      interval: 30s
-      timeout: 10s
-      retries: 5
     secrets:
       - user
       - pass
