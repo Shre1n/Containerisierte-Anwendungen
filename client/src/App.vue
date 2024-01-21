@@ -1,23 +1,23 @@
 <script setup lang="ts">
-import { RouterLink, RouterView } from 'vue-router'
+import { RouterView } from 'vue-router'
 import { onMounted } from "vue";
-import { renderModuleList } from "@/database.service";
+import { checkAccessId } from "@/database.service";
 
 onMounted(async () => {
-  await renderModuleList();
+  const access = await checkAccessId();
+  if (access) {
+    window.location.href = "/";
+  } else {
+    window.location.href = "/access"
+  }
+
+
 })
 
 </script>
 
 <template>
-  <header>
-    <nav>
-      <RouterLink to="/">Home</RouterLink>
-      <RouterLink to="/about">About</RouterLink>
-    </nav>
-  </header>
-
-  <RouterView/>
+  <router-view></router-view>
 </template>
 
 <style scoped>

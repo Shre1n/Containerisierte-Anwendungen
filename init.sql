@@ -2,8 +2,9 @@ USE webappdb;
 
 CREATE TABLE user_table (
   id INT(11) AUTO_INCREMENT PRIMARY KEY,
-  vorname VARCHAR(255) NOT NULL,
-  nachname VARCHAR(255) NOT NULL
+  accessId VARCHAR(255) NOT NULL,
+  vorname VARCHAR(255),
+  nachname VARCHAR(255)
 );
 
 CREATE TABLE module (

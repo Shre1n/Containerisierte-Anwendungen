@@ -82,3 +82,41 @@ export const getModule = async (id: number) => {
     console.error("Error:", e)
   }
 }
+
+
+export const setAndGetNewAccessId = async () => {
+  try {
+    const res = await fetch(`/api/getAccessId`);
+    const data = await res.json();
+    console.log("WOWW:", data.message)
+    return data.accessId as string
+  } catch (e) {
+    console.error("Error:", e)
+  }
+}
+
+export const setAccessId = async (accessId: string) => {
+  try {
+    const res = await fetch(`/api/setAccessId`, {
+      method: "POST",
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(accessId),
+    });
+    const data = await res.json();
+    console.log("WOWW:", data.message)
+    return data.accessId as string
+  } catch (e) {
+    console.error("Error:", e)
+  }
+}
+
+export const checkAccessId = async () => {
+  try {
+    const res = await fetch(`/api/checkAccessId`);
+    return res.status === 200;
+  } catch (e) {
+    console.error("Error:", e)
+  }
+}

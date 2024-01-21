@@ -1,9 +1,13 @@
 <script setup lang="ts">
 
 import {sharedStates} from "@/sharedStates";
-import {reactive} from "vue";
+import { onMounted, reactive } from "vue";
 import { deleteModule, getModule, postModule, putModule, renderModuleList } from "@/database.service";
 import type { PutModule } from "@/interfaces/PutModule";
+
+onMounted(async ()=> {
+  await renderModuleList();
+})
 
 const editInputs = reactive({
   moduleId: 0,
