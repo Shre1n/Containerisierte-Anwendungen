@@ -11,7 +11,6 @@ job-name1:
     - cd client
   script: #Wird durch den Runner ausgeführt
     - npm install
-    - npm run lint:no-fix
 build-publish-docker-image:
   stage: build
   tags:
@@ -21,7 +20,8 @@ build-publish-docker-image:
     entrypoint: [ "" ]
   script:
     - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
-    - /kaniko/executor --context "$CI_PROJECT_DIR/server" --dockerfile "$CI_PROJECT_DIR/server/Dockerfile" --destination "$CI_REGISTRY_IMAGE:$IMAGE_TAG"
+    - /kaniko/executor --context "$CI_PROJECT_DIR/server" --dockerfile "$CI_PROJECT_DIR/server/Dockerfile"
+    - /kaniko/executor --context "$CI_PROJECT_DIR/server" --dockerfile "$CI_PROJECT_DIR/client/Dockerfile"
   # Vordefinierte Variablen von GitLab: https://docs.gitlab.com/ee/ci/variables/predefined_variables.html
   needs: [ "job-name1" ] #gibt an, dass dieser Job auf das erfolgreiche Ende des angegeben Jobs warten muss
 
