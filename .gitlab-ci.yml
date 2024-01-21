@@ -1,13 +1,27 @@
 stages:
   - test
-  
-docker_test:
-  image: tmainer/docker-compose
-  services: 
-    - docker:dbind
+  - build
+job-name1:
   stage: test
-  before_script:
-    - docker-compose build --no-cache
+  tags: #wird genutzt um einen passenden Runner für den Job auszuwählen (siehe für weitere Details: .gitlab-ci.yml)
+    - docker
+  image: node:lts-bullseye-slim #Gibt das Image an, welche für den Jobs als "Basis" genutzt wird
+  allow_failure: true #Gibt an, dass der Job fehlschlagen kann, ohne das die gesamte Pipeline als "failed" angesehen wird
+  before_script: #wird vor dem "script" ausgeführt
+    - cd client
+  script: #Wird durch den Runner ausgeführt
+    - npm install
+    - npm run lint:no-fix
+build-publish-docker-image:
+  stage: build
+  tags:
+    - docker
+  image:
+    name: gcr.io/kaniko-project/executor:debug
+    entrypoint: [ "" ]
   script:
-    docker build -t frontend ./client
-    docker build -t backend ./server
+    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
+    - /kaniko/executor --context "$CI_PROJECT_DIR/server" --dockerfile "$CI_PROJECT_DIR/server/Dockerfile" --destination "$CI_REGISTRY_IMAGE:$IMAGE_TAG"
+  # Vordefinierte Variablen von GitLab: https://docs.gitlab.com/ee/ci/variables/predefined_variables.html
+  needs: [ "job-name1" ] #gibt an, dass dieser Job auf das erfolgreiche Ende des angegeben Jobs warten muss
+
