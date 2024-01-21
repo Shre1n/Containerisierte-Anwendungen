@@ -22,8 +22,10 @@ build-publish-docker-image:
     IMAGE_TAG: latest
   script:
     - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
-    - /kaniko/executor --context "$CI_PROJECT_DIR/server" --dockerfile "$CI_PROJECT_DIR/server/Dockerfile" --destination "$CI_REGISTRY_IMAGE:$IMAGE_TAG"
-    - /kaniko/executor --context "$CI_PROJECT_DIR/client" --dockerfile "$CI_PROJECT_DIR/client/Dockerfile" --destination "$CI_REGISTRY_IMAGE:$IMAGE_TAG"
+    - /kaniko/executor --context "$CI_PROJECT_DIR/server" --dockerfile "$CI_PROJECT_DIR/server/Dockerfile" --destination "${CI_REGISTRY_IMAGE}:${CI_COMMIT_TAG}"
+    - /kaniko/executor --context "$CI_PROJECT_DIR/client" --dockerfile "$CI_PROJECT_DIR/client/Dockerfile" --destination "${CI_REGISTRY_IMAGE}:${CI_COMMIT_TAG}"
   # Vordefinierte Variablen von GitLab: https://docs.gitlab.com/ee/ci/variables/predefined_variables.html
   needs: [ "job-name1" ] #gibt an, dass dieser Job auf das erfolgreiche Ende des angegeben Jobs warten muss
+  rules:
+    - if: $CI_COMMIT_TAG
 
