@@ -9,9 +9,9 @@ build:
     - ls -la
     - pandoc --version
     - pandoc
-      einleitung.md
-      hintergrund.md
-      fazit.md
+      Einleitung.md
+      Start.md
+      Zugriff.md
       -o ../buch.pdf
   artifacts:
     paths:
