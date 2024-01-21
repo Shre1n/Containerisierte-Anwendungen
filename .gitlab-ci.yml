@@ -2,7 +2,7 @@ image: xldrkp/pandoc:latest
 
 build:
   before_script:
-    - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@collaborating.tuhh.de/hos/modernes-publizieren/offen/software/konfigurationen/buchprojekt.wiki.git
+    - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@https://git.thm.de/rhhn94/c_a_p.gitwiki.git
   script:
     - ls -la
     - cd buchprojekt.wiki
