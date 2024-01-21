@@ -1,9 +1,26 @@
-docker-build:
-  # Use the official docker image.
-  image: docker:cli
+stages:
+  - test
+  - build
+job-name1:
+  stage: test
+  tags: #wird genutzt um einen passenden Runner für den Job auszuwählen (siehe für weitere Details: .gitlab-ci.yml)
+    - docker
+  image: node:lts-bullseye-slim #Gibt das Image an, welche für den Jobs als "Basis" genutzt wird
+  allow_failure: true #Gibt an, dass der Job fehlschlagen kann, ohne das die gesamte Pipeline als "failed" angesehen wird
+  before_script: #wird vor dem "script" ausgeführt
+    - cd client
+  script: #Wird durch den Runner ausgeführt
+    - npm install
+    - npm run lint:no-fix
+build-publish-docker-image:
   stage: build
-  services:
-    - docker:dind
+  tags:
+    - docker
+  image:
+    name: gcr.io/kaniko-project/executor:debug
+    entrypoint: [ "" ]
   script:
-    - docker-compose build
-    - docker-compose push
+    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
+    - /kaniko/executor --context "$CI_PROJECT_DIR/server" --dockerfile "$CI_PROJECT_DIR/server/Dockerfile" --destination "$CI_REGISTRY_IMAGE:$IMAGE_TAG"
+  # Vordefinierte Variablen von GitLab: https://docs.gitlab.com/ee/ci/variables/predefined_variables.html
+  needs: [ "job-name1" ] #gibt an, dass dieser Job auf das erfolgreiche Ende des angegeben Jobs warten muss
