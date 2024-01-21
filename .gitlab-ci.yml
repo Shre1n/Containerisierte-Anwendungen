@@ -1,18 +1,1 @@
-image: xldrkp/pandoc:latest
 
-build:
-  before_script:
-    - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@https://git.thm.de/rhhn94/c_a_p.gitwiki.git
-  script:
-    - ls -la
-    - cd buchprojekt.wiki
-    - ls -la
-    - pandoc --version
-    - pandoc
-      Einleitung.md
-      Start.md
-      Zugriff.md
-      -o ../buch.pdf
-  artifacts:
-    paths:
-      - "*.pdf"
