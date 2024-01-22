@@ -102,7 +102,7 @@ export const setAccessId = async (accessId: string) => {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(accessId),
+      body: JSON.stringify({accessId: accessId}),
     });
     const data = await res.json();
     console.log("WOWW:", data.message)

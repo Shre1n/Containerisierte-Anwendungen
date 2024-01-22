@@ -4,7 +4,7 @@ import * as fs from 'fs'
 import path from 'path'
 import { Module } from "./Module";
 import session from "express-session";
-import { NextFunction, Request, Response, urlencoded } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { getRandomString } from "./hash";
 
 
@@ -103,14 +103,15 @@ app.get("/api/modules", checkAccessId(), async (req, res) => {
 app.get("/api/module/:id", checkAccessId(), async (req, res) => {
   const id = Number(req.params.id);
 
-  const query: string = `SELECT *
-                          FROM user_module
-                          JOIN user_table ON user_table.id = user_module.user_id
-                          JOIN module ON module.module_id = user_module.module_id
-                          WHERE user_table.accessId = ? AND module_id = ?`;
+  const query: string = `SELECT module.module_id, module.module_name, module.crp, module.weight, module.grade 
+                            FROM user_module 
+                            JOIN user_table ON user_table.id = user_module.user_id 
+                            JOIN module ON module.module_id = user_module.module_id 
+                            WHERE user_table.accessId = ? AND module.module_id = ?;`;
   const data = [req.session.accessId, id];
 
   try {
+
     const result = await runQuery(query, data);
     console.log(result);
 
@@ -131,6 +132,8 @@ app.get("/api/module/:id", checkAccessId(), async (req, res) => {
       module: returnData[0]
     });
   } catch (e) {
+    console.log(e);
+    console.log(e.message);
     res.status(500).send({
       message: 'Database Error'
     });
@@ -145,11 +148,11 @@ app.put("/api/module/:id", checkAccessId(), async (req, res) => {
   const moduleName = req.body.moduleName;
   const moduleWeight = Number(req.body.moduleWeight);
 
-  const query: string = `UPDATE module
+  const query = `UPDATE module
                           JOIN user_module ON user_module.module_id = module.module_id
                           JOIN user_table ON user_table.id = user_module.user_id
                           SET grade = ?, weight = ?, crp = ?, module_name = ?
-                          WHERE user_module.accessId = ? AND module.module_id = ?;`;
+                          WHERE user_table.accessId = ? AND module.module_id = ?;`;
   const data = [moduleGrade, moduleWeight, moduleCrp, moduleName, req.session.accessId, id];
 
   try {
@@ -160,6 +163,7 @@ app.put("/api/module/:id", checkAccessId(), async (req, res) => {
       message: `Module with id ${id} updated`
     });
   } catch (e) {
+    console.log(e);
     res.status(500).send({
       message: 'Database Error'
     });
@@ -206,10 +210,10 @@ app.delete("/api/module/:id", checkAccessId(), async (req, res) => {
 
   const id = Number(req.params.id);
 
-  const query: string = `DELETE FROM module
+  const query: string = `DELETE module FROM module
                           JOIN user_module ON user_module.module_id = module.module_id
                           JOIN user_table ON user_table.id = user_module.user_id
-                          WHERE user_module.accessId = ? AND module.module_id = ?;`;
+                          WHERE user_table.accessId = ? AND module.module_id = ?;`;
   const data = [req.session.accessId, id];
 
   try {
@@ -219,6 +223,7 @@ app.delete("/api/module/:id", checkAccessId(), async (req, res) => {
       message: `Module deleted`
     });
   } catch (e) {
+    console.log(e);
     res.status(500).send({
       message: 'Database Error'
     });
@@ -245,7 +250,7 @@ app.get("/api/getAccessId", async (req, res) => {
   }
 })
 
-app.post("/api/setAccessId", async (req, res)=>{
+app.post("/api/setAccessId", async (req, res) => {
   const accessId = req.body.accessId;
   const query: string = "SELECT * FROM user_table WHERE accessId = ?;";
   const data = [accessId];
@@ -271,7 +276,7 @@ app.post("/api/setAccessId", async (req, res)=>{
 })
 
 
-app.get("/api/checkAccessId", checkAccessId(), (req, res)=> {
+app.get("/api/checkAccessId", checkAccessId(), (req, res) => {
   res.sendStatus(200);
 })
 

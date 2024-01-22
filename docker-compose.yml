@@ -68,7 +68,7 @@ services:
       - intern
 
   proxy:
-    image: nginx:alpine
+    image: nginx:1.25.3-alpine
     ports:
       - "8000:8000"
     volumes:

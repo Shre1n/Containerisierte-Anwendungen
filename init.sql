@@ -22,7 +22,7 @@ CREATE TABLE user_module (
 
 ALTER TABLE user_module
 ADD FOREIGN KEY (user_id) REFERENCES user_table(id),
-ADD FOREIGN KEY (module_id) REFERENCES module(module_id);
+ADD FOREIGN KEY (module_id) REFERENCES module(module_id) ON DELETE CASCADE;
 
 
 INSERT INTO module (module_id, module_name, crp, weight, grade) VALUES

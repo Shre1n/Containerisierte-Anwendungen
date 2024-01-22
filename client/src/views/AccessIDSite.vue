@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { setAccessId, setAndGetNewAccessId } from "@/database.service";
+import { renderModuleList, setAccessId, setAndGetNewAccessId } from "@/database.service";
 import { reactive } from "vue";
+import { sharedStates } from "@/sharedStates";
 
 const inputs = reactive({
   getText: '',
@@ -25,33 +26,45 @@ async function handleSetAccessId() {
   }
 }
 
+async function handleShowModuleList() {
+  await renderModuleList();
+  sharedStates.showList = true;
+}
+
 </script>
 
 <template>
-<div class="container d-flex justify-content-center">
-  <template v-if="inputs.getText.length !== 0">
-    <p>Bewahre diese AccessId gut auf. Wenn du sie einmal verloren hast gibt es keinen Weg sie wieder zu
-      bekommen.</p>
-    <input
-        ref="clone"
-        readonly
-        :value="inputs.getText"/>
-    <button @click="copy">Kopieren!</button>
-  </template>
-  <template v-if="inputs.getText.length === 0">
-    <p>Du hast bereits eine AccessId? Kopiere sie in dieses Textfeld und sende sie ab um deine Daten zu
-      bekommen.</p>
-    <input
-        ref="input"
-        :value="inputs.postText"/>
-    <button @click="handleSetAccessId">Senden</button>
-    <p>Du bist neu hier? Dann klicke hier um deine persönliche AccessId zu bekommen!</p>
-    <button @click="generateAccessId">Erhalte deine AccessId</button>
-  </template>
+  <div id="app" class="container">
+    <div class="row">
 
-  <button v-if="inputs.getText.length !== 0" href="/" type="button" class="btn btn-secondary">Weiter gehts!</button>
-</div>
 
+      <div class="col-5">
+        <template v-if="inputs.getText.length !== 0">
+          <p>Bewahre diese AccessId gut auf. Wenn du sie einmal verloren hast gibt es keinen Weg sie wieder zu
+            bekommen.</p>
+          <input
+              ref="clone"
+              readonly
+              :value="inputs.getText"/>
+          <button @click="copy">Kopieren!</button>
+        </template>
+        <template v-if="inputs.getText.length === 0">
+          <p>Du hast bereits eine AccessId? Kopiere sie in dieses Textfeld und sende sie ab um deine Daten zu
+            bekommen.</p>
+          <input
+              ref="input"
+              v-model="inputs.postText"/>
+          <button @click="handleSetAccessId">Senden</button>
+          <p>Du bist neu hier? Dann klicke hier um deine persönliche AccessId zu bekommen!</p>
+          <button @click="generateAccessId">Erhalte deine AccessId</button>
+        </template>
+
+        <button v-if="inputs.getText.length !== 0" @click="handleShowModuleList" type="button"
+                class="btn btn-secondary">Weiter gehts!
+        </button>
+      </div>
+    </div>
+  </div>
 
 
 </template>
