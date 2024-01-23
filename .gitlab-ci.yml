@@ -1,17 +1,6 @@
 stages:
-  - test
   - build
-job-name1:
-  stage: test
-  tags: #wird genutzt um einen passenden Runner für den Job auszuwählen (siehe für weitere Details: .gitlab-ci.yml)
-    - nodejs
- 
-  allow_failure: true #Gibt an, dass der Job fehlschlagen kann, ohne das die gesamte Pipeline als "failed" angesehen wird
-  before_script: #wird vor dem "script" ausgeführt
-    - cd client
-  script: #Wird durch den Runner ausgeführt
-    - npm install
-build-publish-docker-image:
+build:
   stage: build
   tags:
     - kaniko
@@ -25,5 +14,4 @@ build-publish-docker-image:
     - /kaniko/executor --context "$CI_PROJECT_DIR/server" --dockerfile "$CI_PROJECT_DIR/server/Dockerfile" --destination "$CI_REGISTRY_IMAGE:latest"
     - /kaniko/executor --context "$CI_PROJECT_DIR/client" --dockerfile "$CI_PROJECT_DIR/client/Dockerfile" --destination "$CI_REGISTRY_IMAGE:latest"
   # Vordefinierte Variablen von GitLab: https://docs.gitlab.com/ee/ci/variables/predefined_variables.html
-  needs: [ "job-name1" ] #gibt an, dass dieser Job auf das erfolgreiche Ende des angegeben Jobs warten muss
 
