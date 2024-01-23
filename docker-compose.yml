@@ -3,7 +3,7 @@ version: '3.1'
 
 services:
   db:
-    image: mariadb:lts
+    image: mariadb:11.2
     container_name: db
     restart: unless-stopped
     environment:
