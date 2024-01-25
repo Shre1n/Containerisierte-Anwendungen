@@ -100,6 +100,33 @@ app.get("/api/modules", checkAccessId(), async (req, res) => {
   }
 });
 
+
+app.get("/api/average", checkAccessId(), async (req, res) => {
+  const query: string = `
+    SELECT AVG(module.grade) AS averageGrade
+    FROM user_module
+    JOIN user_table ON user_table.id = user_module.user_id
+    JOIN module ON module.module_id = user_module.module_id
+    WHERE user_table.accessId = ?;
+  `;
+  const data = [req.session.accessId];
+
+  try {
+    const result = await runQuery(query, data);
+    const average= result[0].average;
+
+    res.status(200).send({
+      message: 'Average grade retrieved',
+      average: average
+    });
+  } catch (e) {
+    console.error(e);
+    res.status(500).send({
+      message: 'Database Error'
+    });
+  }
+})
+
 app.get("/api/module/:id", checkAccessId(), async (req, res) => {
   const id = Number(req.params.id);
 
