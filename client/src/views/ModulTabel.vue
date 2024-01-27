@@ -76,7 +76,7 @@ const calculateAverageGrade = (): string => {
   }
 
   const totalGrade = passedModules.reduce((sum, module) => sum + module.moduleGrade, 0);
-  const averageGrade = totalGrade / moduleList.length;
+  const averageGrade = totalGrade / passedModules.length;
 
   return averageGrade.toFixed(1)
 };
@@ -147,7 +147,7 @@ const calculateAverageGrade = (): string => {
           </tr>
           </tbody>
         </table>
-        <div v-if="sharedStates.moduleList.length > 0" class="row justify-content-center mt-4">
+        <div v-if="calculateAverageGrade() !== ''" class="row justify-content-center mt-4">
             <h5 class="my-4">Durchschnittsnote: {{ calculateAverageGrade()}}%</h5>
         </div>
       </div>
