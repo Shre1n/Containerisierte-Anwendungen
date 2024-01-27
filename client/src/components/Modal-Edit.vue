@@ -2,11 +2,6 @@
 import { sharedStates } from "@/sharedStates";
 import { reactive } from "vue";
 
-const emit = defineEmits<{
-  edit: [func: (id: number)=> void]
-  update: [value: string]
-}>()
-
 
 function saveChanges() {
   sharedStates.formVisible = false;
@@ -35,23 +30,7 @@ const editInputs = reactive({
   moduleWeight: 0
 });
 
-function edit(id: number) {
-  const module = sharedStates.moduleList.find((m) => {
-    return m.id = id
-  });
 
-  if (!module) {
-    console.log("module Not found");
-    return
-  }
-  editInputs.moduleId = module.id;
-  editInputs.moduleName = module.moduleName;
-  editInputs.moduleCrp = module.moduleCrp;
-  editInputs.moduleGrade = module.moduleGrade;
-  editInputs.moduleWeight = module.moduleWeight;
-
-  sharedStates.formVisible = true;
-}
 
 </script>
 
