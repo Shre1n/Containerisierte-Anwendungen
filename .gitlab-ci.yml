@@ -4,7 +4,7 @@ stages:
 
 eslint:
   stage: lint
-  image: node:20
+  image: node:lts
   script:
     - cd client
     - npm install
