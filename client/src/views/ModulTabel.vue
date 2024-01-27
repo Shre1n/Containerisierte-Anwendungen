@@ -70,16 +70,14 @@ async function saveChanges() {
 
 const calculateAverageGrade = (): string => {
   const moduleList: Module[] = sharedStates.moduleList;
-  if (moduleList.length == 0) {
+  const passedModules: Module[] = moduleList.filter((module) => module.moduleGrade >= 50);
+  if (passedModules.length === 0) {
     return "";
   }
 
-  let totalGrade = 0;
-  for (const module of moduleList) {
-    totalGrade += module.moduleGrade;
-  }
-
+  const totalGrade = passedModules.reduce((sum, module) => sum + module.moduleGrade, 0);
   const averageGrade = totalGrade / moduleList.length;
+
   return averageGrade.toFixed(1)
 };
 
