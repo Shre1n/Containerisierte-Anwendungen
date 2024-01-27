@@ -1,5 +1,14 @@
 stages:
+  - lint
   - build
+
+eslint:
+  stage: lint
+  script:
+    - npm i eslint
+    - node_modules/eslint/bin/eslint.js .
+
+
 build:
   stage: build
   tags:
@@ -14,4 +23,5 @@ build:
     - /kaniko/executor --context "$CI_PROJECT_DIR/server" --dockerfile "$CI_PROJECT_DIR/server/Dockerfile" --destination "$CI_REGISTRY_IMAGE:latest"
     - /kaniko/executor --context "$CI_PROJECT_DIR/client" --dockerfile "$CI_PROJECT_DIR/client/Dockerfile" --destination "$CI_REGISTRY_IMAGE:latest"
   # Vordefinierte Variablen von GitLab: https://docs.gitlab.com/ee/ci/variables/predefined_variables.html
+  needs: [ "eslint" ]
 
