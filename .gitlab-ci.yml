@@ -1,1 +1,44 @@
+stages:
+  - lint
+  - client
+  - backend
+
+eslint:
+  stage: lint
+  tags:
+    - docker
+  image: node:lts-bullseye-slim
+  allow_failure: true
+  before_script:
+    - cd client
+  script:
+    - npm install
+    - npm run lint
+
+frontend:
+  stage: client
+  tags:
+    - kaniko
+  image:
+    name: gcr.io/kaniko-project/executor:debug
+    entrypoint: [ "" ]
+  variables:
+    IMAGE_TAG: latest
+  script:
+    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
+    - /kaniko/executor --context "$CI_PROJECT_DIR/client" --dockerfile "$CI_PROJECT_DIR/client/Dockerfile" --destination "$CI_REGISTRY_IMAGE:latest"
+
+backend:
+  stage: backend
+  tags:
+    - kaniko
+  image:
+    name: gcr.io/kaniko-project/executor:debug
+    entrypoint: [ "" ]
+  variables:
+    IMAGE_TAG: latest
+  script:
+    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
+    - /kaniko/executor --context "$CI_PROJECT_DIR/server" --dockerfile "$CI_PROJECT_DIR/server/Dockerfile" --destination "$CI_REGISTRY_IMAGE:latest"
+  needs: [ "frontend" ]
 
