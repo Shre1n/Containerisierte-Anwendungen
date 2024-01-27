@@ -141,7 +141,7 @@ const calculateAverageGrade = (): string => {
             <td>{{ module.moduleName }}</td>
             <td>{{ module.moduleCrp }}</td>
             <td>{{ module.moduleGrade }}%</td>
-            <td>{{ module.moduleWeight }}%</td>
+            <td>{{ module.moduleWeight }}</td>
             <td>
               <button class="btn btn-primary mx-1" @click="edit(module.id)">Editieren</button>
               <button class="btn btn-danger mx-1" @click="remove(module.id)">Löschen</button>
