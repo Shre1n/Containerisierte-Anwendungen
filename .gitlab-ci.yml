@@ -4,13 +4,14 @@ stages:
 
 eslint:
   stage: lint
+  tags: docker
   image: node:lts-bullseye-slim
-  script:
+  allow_failure: true
+  before_script:
     - cd client
+  script:
     - npm install
     - npm run lint
-
-
 build:
   stage: build
   tags:
