@@ -1,6 +1,7 @@
 stages:
   - lint
-  - build
+  - frontend
+  - backend
 
 eslint:
   stage: lint
@@ -13,8 +14,22 @@ eslint:
   script:
     - npm install
     - npm run lint
-build:
-  stage: build
+
+frontend:
+  stage: client
+  tags:
+    - kaniko
+  image:
+    name: gcr.io/kaniko-project/executor:debug
+    entrypoint: [ "" ]
+  variables:
+    IMAGE_TAG: latest
+  script:
+    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
+    - /kaniko/executor --context "$CI_PROJECT_DIR/client" --dockerfile "$CI_PROJECT_DIR/client/Dockerfile" --destination "$CI_REGISTRY_IMAGE:latest"
+
+backend:
+  stage: server
   tags:
     - kaniko
   image:
@@ -25,7 +40,5 @@ build:
   script:
     - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
     - /kaniko/executor --context "$CI_PROJECT_DIR/server" --dockerfile "$CI_PROJECT_DIR/server/Dockerfile" --destination "$CI_REGISTRY_IMAGE:latest"
-    - /kaniko/executor --context "$CI_PROJECT_DIR/client" --dockerfile "$CI_PROJECT_DIR/client/Dockerfile" --destination "$CI_REGISTRY_IMAGE:latest"
-  # Vordefinierte Variablen von GitLab: https://docs.gitlab.com/ee/ci/variables/predefined_variables.html
-  needs: [ "eslint" ]
+  needs: [ "frontend" ]
 
