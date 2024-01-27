@@ -4,7 +4,7 @@ import {sharedStates} from "@/sharedStates";
 import {onMounted, reactive} from "vue";
 import {deleteModule, getModule, postModule, putModule, renderModuleList} from "@/database.service";
 import type {PutModule} from "@/interfaces/PutModule";
-import {a} from "vitest/dist/suite-dF4WyktM";
+import type {Module} from "@/interfaces/Module";
 
 onMounted(async () => {
   await renderModuleList();
@@ -19,14 +19,14 @@ const editInputs = reactive({
 });
 
 
-function openAddModuleModal() {
+function triggerAddModuleModal() {
   editInputs.moduleId = 0;
   editInputs.moduleName = "";
   editInputs.moduleCrp = 0;
   editInputs.moduleGrade = 0;
   editInputs.moduleWeight = 0;
 
-  sharedStates.formVisible = true;
+  sharedStates.formVisible = !sharedStates.formVisible;
 }
 
 
@@ -68,10 +68,10 @@ async function saveChanges() {
   await renderModuleList();
 }
 
-const calculateAverageGrade = (): number => {
+const calculateAverageGrade = (): string => {
   const moduleList: Module[] = sharedStates.moduleList;
   if (moduleList.length == 0) {
-    return 0;
+    return "";
   }
 
   let totalGrade = 0;
@@ -80,24 +80,30 @@ const calculateAverageGrade = (): number => {
   }
 
   const averageGrade = totalGrade / moduleList.length;
-  return averageGrade;
+  return averageGrade.toFixed(1)
 };
 
 </script>
 
 <template>
   <div id="app" class="container">
-    <div class="row justify-content-center">
-      <div class="col-auto">
-        <button class="btn btn-primary mx-1">Speichern</button>
-        <button class="btn btn-success mx-1">Laden</button>
-        <button class="btn btn-success mx-1" @click="openAddModuleModal">Modul hinzufügen</button>
-      </div>
-    </div>
-    <div class="row justify-content-center mt-4">
+    <div class="row justify-content-center mt-5">
       <div class="card" id="master-card">
-        <h5 class="card-title">Übersicht</h5>
-        <h6 class="card-subtitle mb-2">Informationen über belegte Module</h6>
+        <div class="row justify-content-around mt-3">
+          <div class="col">
+            <h5 class="card-title">Übersicht</h5>
+            <h6 class="card-subtitle mb-2">Informationen über belegte Module</h6>
+          </div>
+          <div class="col-auto">
+            <button v-if="sharedStates.formVisible" class="btn btn-danger mx-1" @click="triggerAddModuleModal">
+              Schließen
+            </button>
+            <button v-if="!sharedStates.formVisible" class="btn btn-success mx-1" @click="triggerAddModuleModal">
+              Modul hinzufügen
+            </button>
+          </div>
+        </div>
+
 
         <div class="justify-content-center d-flex">
           <form @submit.prevent="saveChanges" v-show="sharedStates.formVisible" style="max-width: 20em">
@@ -128,7 +134,6 @@ const calculateAverageGrade = (): number => {
             <th>Note</th>
             <th>Gewichtung</th>
             <th>Editieren & Löschen</th>
-            <th> tester </th>
           </tr>
           </thead>
           <tbody>
@@ -136,6 +141,7 @@ const calculateAverageGrade = (): number => {
             <td>{{ module.moduleName }}</td>
             <td>{{ module.moduleCrp }}</td>
             <td>{{ module.moduleGrade }}%</td>
+            <td>{{ module.moduleWeight }}%</td>
             <td>
               <button class="btn btn-primary mx-1" @click="edit(module.id)">Editieren</button>
               <button class="btn btn-danger mx-1" @click="remove(module.id)">Löschen</button>
@@ -144,9 +150,7 @@ const calculateAverageGrade = (): number => {
           </tbody>
         </table>
         <div v-if="sharedStates.moduleList.length > 0" class="row justify-content-center mt-4">
-          <div class="card">
-            <h6 class="card-subtitle mb-2">Durchschnittsnote: {{ calculateAverageGrade()}}%</h6>
-          </div>
+            <h5 class="my-4">Durchschnittsnote: {{ calculateAverageGrade()}}%</h5>
         </div>
       </div>
     </div>

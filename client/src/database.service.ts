@@ -1,7 +1,6 @@
 import type { Module } from "@/interfaces/Module";
 import { sharedStates } from "@/sharedStates";
 import type { PutModule } from "@/interfaces/PutModule";
-import {as, aw} from "vitest/dist/reporters-O4LBziQ_";
 
 /**
  * Gets the Module List from the backend and returns it
