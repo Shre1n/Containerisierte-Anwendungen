@@ -4,7 +4,8 @@ stages:
 
 eslint:
   stage: lint
-  tags: docker
+  tags:
+    - docker
   image: node:lts-bullseye-slim
   allow_failure: true
   before_script:
