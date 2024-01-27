@@ -1,7 +1,7 @@
 import type { Module } from "@/interfaces/Module";
 import { sharedStates } from "@/sharedStates";
 import type { PutModule } from "@/interfaces/PutModule";
-import {as} from "vitest/dist/reporters-O4LBziQ_";
+import {as, aw} from "vitest/dist/reporters-O4LBziQ_";
 
 /**
  * Gets the Module List from the backend and returns it
@@ -68,19 +68,6 @@ export const postModule = async (postData: PutModule) => {
     const data = await res.json();
     console.log("WOWW:", data.message)
   } catch (e) {
-    console.error("Error:", e)
-  }
-}
-
-
-export const getAverageGrade = async () => {
-  try {
-    const res = await fetch(`/api/avggrade`);
-    const data = await res.json();
-    console.log("WOWW:", data.message)
-    return data.average as number;
-
-  }catch (e){
     console.error("Error:", e)
   }
 }

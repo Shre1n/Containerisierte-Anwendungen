@@ -1,11 +1,12 @@
 <script setup lang="ts">
 
 import {sharedStates} from "@/sharedStates";
-import { onMounted, reactive } from "vue";
-import { deleteModule, getModule, postModule, putModule, renderModuleList } from "@/database.service";
-import type { PutModule } from "@/interfaces/PutModule";
+import {onMounted, reactive} from "vue";
+import {deleteModule, getModule, postModule, putModule, renderModuleList} from "@/database.service";
+import type {PutModule} from "@/interfaces/PutModule";
+import {a} from "vitest/dist/suite-dF4WyktM";
 
-onMounted(async ()=> {
+onMounted(async () => {
   await renderModuleList();
 })
 
@@ -55,7 +56,7 @@ async function saveChanges() {
   sharedStates.formVisible = false;
   const updateData: PutModule = {
     moduleCrp: editInputs.moduleCrp,
-    moduleGrade:  editInputs.moduleGrade,
+    moduleGrade: editInputs.moduleGrade,
     moduleName: editInputs.moduleName,
     moduleWeight: editInputs.moduleWeight
   }
@@ -64,9 +65,23 @@ async function saveChanges() {
   } else {
     await putModule(editInputs.moduleId, updateData);
   }
-
   await renderModuleList();
 }
+
+const calculateAverageGrade = (): number => {
+  const moduleList: Module[] = sharedStates.moduleList;
+  if (moduleList.length == 0) {
+    return 0;
+  }
+
+  let totalGrade = 0;
+  for (const module of moduleList) {
+    totalGrade += module.moduleGrade;
+  }
+
+  const averageGrade = totalGrade / moduleList.length;
+  return averageGrade;
+};
 
 </script>
 
@@ -74,9 +89,9 @@ async function saveChanges() {
   <div id="app" class="container">
     <div class="row justify-content-center">
       <div class="col-auto">
-        <button class="btn btn-primary mx-1" >Speichern</button>
-        <button class="btn btn-success mx-1" >Laden</button>
-        <button class="btn btn-success mx-1" @click="openAddModuleModal" >Modul hinzufügen</button>
+        <button class="btn btn-primary mx-1">Speichern</button>
+        <button class="btn btn-success mx-1">Laden</button>
+        <button class="btn btn-success mx-1" @click="openAddModuleModal">Modul hinzufügen</button>
       </div>
     </div>
     <div class="row justify-content-center mt-4">
@@ -113,6 +128,7 @@ async function saveChanges() {
             <th>Note</th>
             <th>Gewichtung</th>
             <th>Editieren & Löschen</th>
+            <th> tester </th>
           </tr>
           </thead>
           <tbody>
@@ -120,7 +136,6 @@ async function saveChanges() {
             <td>{{ module.moduleName }}</td>
             <td>{{ module.moduleCrp }}</td>
             <td>{{ module.moduleGrade }}%</td>
-            <td>{{ module.moduleWeight }}</td>
             <td>
               <button class="btn btn-primary mx-1" @click="edit(module.id)">Editieren</button>
               <button class="btn btn-danger mx-1" @click="remove(module.id)">Löschen</button>
@@ -128,6 +143,11 @@ async function saveChanges() {
           </tr>
           </tbody>
         </table>
+        <div v-if="sharedStates.moduleList.length > 0" class="row justify-content-center mt-4">
+          <div class="card">
+            <h6 class="card-subtitle mb-2">Durchschnittsnote: {{ calculateAverageGrade()}}%</h6>
+          </div>
+        </div>
       </div>
     </div>
   </div>
