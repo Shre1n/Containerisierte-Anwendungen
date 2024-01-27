@@ -4,9 +4,11 @@ stages:
 
 eslint:
   stage: lint
+  image: node:12
   script:
-    - npm i eslint
-    - node_modules/eslint/bin/eslint.js .
+    - cd client
+    - npm install
+    - npm run lint
 
 
 build:
