@@ -74,6 +74,7 @@ performance_test:
   script:
     - npm install -g artillery
     - artillery run ./performance-test-config.yml
+  needs: [ "server" ]
 
 
 
