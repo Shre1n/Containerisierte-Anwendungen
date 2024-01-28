@@ -4,7 +4,7 @@ stages:
   - client
   - backend
   - performance_test
-  - server
+  - server_start
 
 eslint_client:
   stage: lint_client
@@ -57,8 +57,8 @@ backend:
     - /kaniko/executor --context "$CI_PROJECT_DIR/server" --dockerfile "$CI_PROJECT_DIR/server/Dockerfile" --destination "$CI_REGISTRY_IMAGE:server"
   needs: [ "frontend" ]
 
-start_server:
-  stage: server
+server:
+  stage: server_start
   allow_failure: true
   before_script:
     - cd server
@@ -74,7 +74,7 @@ performance_test:
   script:
     - npm install -g artillery
     - artillery run ./performance-test-config.yml
-  needs: [ "start_server" ]
+  needs: [ "server" ]
 
 
 
