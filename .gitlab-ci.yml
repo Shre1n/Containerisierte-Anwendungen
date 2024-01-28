@@ -3,8 +3,8 @@ stages:
   - lint_server
   - client
   - server
-  - performance_test
   - server_start
+  - performance_test
 
 eslint_client:
   stage: lint_client
