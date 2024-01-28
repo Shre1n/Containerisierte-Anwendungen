@@ -4,6 +4,7 @@ stages:
   - client
   - backend
   - performance_test
+  - start_server
 
 eslint_client:
   stage: lint_client
@@ -64,4 +65,14 @@ performance_test:
   script:
     - npm install -g artillery
     - artillery run ./performance-test-config.yml
+  needs: ["start_server"]
+
+start_server:
+  stage: start_server
+  allow_failure: true
+  before_script:
+    - cd server
+  script:
+    - npm install
+    - npm start ./server.js
 
