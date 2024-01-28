@@ -65,7 +65,7 @@ performance_test:
   script:
     - npm install -g artillery
     - artillery run ./performance-test-config.yml
-  needs: ["start_server"]
+  needs: [ "start_server" ]
 
 start_server:
   stage: start_server
