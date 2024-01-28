@@ -3,6 +3,7 @@ stages:
   - lint_server
   - client
   - backend
+  - performance_test
 
 eslint_client:
   stage: lint_client
@@ -54,4 +55,13 @@ backend:
     - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
     - /kaniko/executor --context "$CI_PROJECT_DIR/server" --dockerfile "$CI_PROJECT_DIR/server/Dockerfile" --destination "$CI_REGISTRY_IMAGE:server"
   needs: [ "frontend" ]
+
+performance_test:
+  stage: performance_test
+  tags:
+    - docker
+  image: node:lts-bullseye-slim
+  script:
+    - npm install -g artillery
+    - artillery run ./performance-test-config.yml
 

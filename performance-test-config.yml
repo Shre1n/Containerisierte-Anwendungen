@@ -1,0 +1,17 @@
+config:
+  target: 'http://localhost:8081'  # Die URL deiner Anwendung
+  phases:
+    - duration: 60  # Die Dauer des Tests in Sekunden
+      arrivalRate: 10  # Anzahl der Anfragen pro Sekunde während der Dauer
+
+scenarios:
+  - flow:
+      - get:
+          url: '/api/modules'
+      - post:
+          url: '/api/module'
+          json:
+            moduleCrp: 3
+            moduleGrade: 80
+            moduleName: 'TestModule'
+            moduleWeight: 2
