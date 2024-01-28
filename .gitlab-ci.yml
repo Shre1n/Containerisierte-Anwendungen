@@ -61,12 +61,9 @@ server:
   stage: server_start
   tags:
     - docker
-  image: node:lts-bullseye-slim
+  image: $CI_REGISTRY_IMAGE:server
   allow_failure: true
-  before_script:
-    - cd server
   script:
-    - npm install
     - npm start
 
 performance_test:
