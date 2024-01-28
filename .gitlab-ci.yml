@@ -67,7 +67,7 @@ server:
     - cd server
   script:
     - npm install
-    - npm start ./server.js
+    - npm start
 
 performance_test:
   stage: performance_test
