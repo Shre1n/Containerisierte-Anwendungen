@@ -60,6 +60,7 @@ backend:
 server:
   stage: server_start
   allow_failure: true
+  image: node:lts-bullseye-slim
   before_script:
     - cd server
   script:
