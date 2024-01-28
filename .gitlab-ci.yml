@@ -59,8 +59,10 @@ backend:
 
 server:
   stage: server_start
-  allow_failure: true
+  tags:
+    - docker
   image: node:lts-bullseye-slim
+  allow_failure: true
   before_script:
     - cd server
   script:
