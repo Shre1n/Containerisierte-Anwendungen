@@ -1,63 +1,32 @@
 <script setup lang="ts">
-import { sharedStates } from "@/sharedStates";
-import { reactive } from "vue";
-
-const emit = defineEmits<{
-  edit: [func: (id: number)=> void]
-  update: [value: string]
-}>()
 
 
-function saveChanges() {
+import { editInputs, sharedStates } from "@/sharedStates";
+import type { PutModule } from "@/interfaces/PutModule";
+import { postModule, putModule, renderModuleList } from "@/database.service";
+
+
+async function saveChanges() {
   sharedStates.formVisible = false;
-  const index = sharedStates.moduleList.findIndex(module => module.id === editInputs.moduleId);
-
-  if (index !== -1) {
-    sharedStates.moduleList[index] = {
-      ...sharedStates.moduleList[index],
-      moduleName: editInputs.moduleName,
-      moduleWeight: editInputs.moduleWeight,
-      moduleCrp: editInputs.moduleCrp,
-      moduleGrade: editInputs.moduleGrade,
-    };
+  const updateData: PutModule = {
+    moduleCrp: editInputs.moduleCrp,
+    moduleGrade: editInputs.moduleGrade,
+    moduleName: editInputs.moduleName,
+    moduleWeight: editInputs.moduleWeight
+  }
+  if (editInputs.moduleId === 0) {
+    await postModule(updateData);
   } else {
-    console.log(`Module not found.`);
+    await putModule(editInputs.moduleId, updateData);
   }
-
-  console.log(sharedStates.moduleList)
-}
-
-const editInputs = reactive({
-  moduleId: 0,
-  moduleName: "",
-  moduleCrp: 0,
-  moduleGrade: 0,
-  moduleWeight: 0
-});
-
-function edit(id: number) {
-  const module = sharedStates.moduleList.find((m) => {
-    return m.id = id
-  });
-
-  if (!module) {
-    console.log("module Not found");
-    return
-  }
-  editInputs.moduleId = module.id;
-  editInputs.moduleName = module.moduleName;
-  editInputs.moduleCrp = module.moduleCrp;
-  editInputs.moduleGrade = module.moduleGrade;
-  editInputs.moduleWeight = module.moduleWeight;
-
-  sharedStates.formVisible = true;
+  await renderModuleList();
 }
 
 </script>
 
 <template>
   <div class="justify-content-center d-flex">
-    <form @submit.prevent="saveChanges" v-show="sharedStates.formVisible" style="max-width: 10em">
+    <form @submit.prevent="saveChanges" v-show="sharedStates.formVisible" style="max-width: 20em">
       <div class="mb-3">
         <label for="modulNameInput" class="form-label">Modul Name</label>
         <input v-model="editInputs.moduleName" type="text" class="form-control" id="modulNameInput">
