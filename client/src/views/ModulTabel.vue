@@ -1,22 +1,16 @@
 <script setup lang="ts">
 
-import {sharedStates} from "@/sharedStates";
-import {onMounted, reactive} from "vue";
-import {deleteModule, getModule, postModule, putModule, renderModuleList} from "@/database.service";
-import type {PutModule} from "@/interfaces/PutModule";
+import { editInputs, sharedStates } from "@/sharedStates";
+import { computed, onMounted } from "vue";
+import { postModule, putModule, renderModuleList } from "@/database.service";
 import type {Module} from "@/interfaces/Module";
+import type { PutModule } from "@/interfaces/PutModule";
+import ListEntrys from "@/components/ListEntrys.vue";
 
 onMounted(async () => {
   await renderModuleList();
 })
 
-const editInputs = reactive({
-  moduleId: 0,
-  moduleName: "",
-  moduleCrp: 0,
-  moduleGrade: 0,
-  moduleWeight: 0
-});
 
 
 function triggerAddModuleModal() {
@@ -29,28 +23,6 @@ function triggerAddModuleModal() {
   sharedStates.formVisible = !sharedStates.formVisible;
 }
 
-
-async function edit(id: number) {
-  const module = await getModule(id);
-
-  if (!module) {
-    console.log("module Not found");
-    return
-  }
-  editInputs.moduleId = module.id;
-  editInputs.moduleName = module.moduleName;
-  editInputs.moduleCrp = module.moduleCrp;
-  editInputs.moduleGrade = module.moduleGrade;
-  editInputs.moduleWeight = module.moduleWeight;
-
-  sharedStates.formVisible = true;
-
-}
-
-async function remove(id: number) {
-  await deleteModule(id);
-  await renderModuleList();
-}
 
 async function saveChanges() {
   sharedStates.formVisible = false;
@@ -68,7 +40,7 @@ async function saveChanges() {
   await renderModuleList();
 }
 
-const calculateAverageGrade = (): string => {
+const calculateAverageGrade = computed(()=>{
   const moduleList: Module[] = sharedStates.moduleList;
   const passedModules: Module[] = moduleList.filter((module) => module.moduleGrade >= 50);
   if (passedModules.length === 0) {
@@ -79,7 +51,7 @@ const calculateAverageGrade = (): string => {
   const averageGrade = totalGrade / passedModules.length;
 
   return averageGrade.toFixed(1)
-};
+})
 
 </script>
 
@@ -124,31 +96,13 @@ const calculateAverageGrade = (): string => {
             <button class="btn btn-primary" type="submit">Übernehmen</button>
           </form>
         </div>
-        <table id="master-head" class="table mt-4">
-          <thead class="thead-dark">
-          <tr>
-            <th>Module</th>
-            <th>Crp</th>
-            <th>Note</th>
-            <th>Gewichtung</th>
-            <th>Editieren & Löschen</th>
-          </tr>
-          </thead>
-          <tbody>
-          <tr v-for="module in sharedStates.moduleList" :key="module.id">
-            <td>{{ module.moduleName }}</td>
-            <td>{{ module.moduleCrp }}</td>
-            <td>{{ module.moduleGrade }}%</td>
-            <td>{{ module.moduleWeight }}</td>
-            <td>
-              <button class="btn btn-primary mx-1" @click="edit(module.id)">Editieren</button>
-              <button class="btn btn-danger mx-1" @click="remove(module.id)">Löschen</button>
-            </td>
-          </tr>
-          </tbody>
-        </table>
-        <div v-if="calculateAverageGrade() !== ''" class="row justify-content-center mt-4">
-            <h5 class="my-4">Durchschnittsnote: {{ calculateAverageGrade()}}%</h5>
+
+        <div class="container">
+          <ListEntrys/>
+        </div>
+
+        <div v-if="calculateAverageGrade !== ''" class="row justify-content-center mt-4">
+            <h5 class="my-4">Durchschnittsnote: {{ calculateAverageGrade}}%</h5>
         </div>
       </div>
     </div>

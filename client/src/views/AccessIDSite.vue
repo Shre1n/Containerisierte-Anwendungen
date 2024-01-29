@@ -34,7 +34,7 @@ async function handleShowModuleList() {
 </script>
 
 <template>
-  <div id="app" class="container">
+  <div id="app" class="container mt-5">
     <div class="row">
 
 
@@ -42,25 +42,31 @@ async function handleShowModuleList() {
         <template v-if="inputs.getText.length !== 0">
           <p>Bewahre diese AccessId gut auf. Wenn du sie einmal verloren hast gibt es keinen Weg sie wieder zu
             bekommen.</p>
-          <input
-              ref="clone"
-              readonly
-              :value="inputs.getText"/>
-          <button @click="copy">Kopieren!</button>
+          <div class="input-group">
+            <input
+                class="form-control"
+                ref="clone"
+                readonly
+                :value="inputs.getText"/>
+            <button class="btn btn-primary" @click="copy">Kopieren!</button>
+          </div>
         </template>
         <template v-if="inputs.getText.length === 0">
           <p>Du hast bereits eine AccessId? Kopiere sie in dieses Textfeld und sende sie ab um deine Daten zu
             bekommen.</p>
-          <input
-              ref="input"
-              v-model="inputs.postText"/>
-          <button @click="handleSetAccessId">Senden</button>
+          <div class="input-group">
+            <input
+                class="form-control"
+                ref="input"
+                v-model="inputs.postText"/>
+            <button class="btn btn-success" @click="handleSetAccessId">Senden</button>
+          </div>
           <p>Du bist neu hier? Dann klicke hier um deine persönliche AccessId zu bekommen!</p>
-          <button @click="generateAccessId">Erhalte deine AccessId</button>
+          <button class="btn btn-secondary" @click="generateAccessId">Erhalte deine AccessId</button>
         </template>
 
         <button v-if="inputs.getText.length !== 0" @click="handleShowModuleList" type="button"
-                class="btn btn-secondary">Weiter gehts!
+                class="btn btn-secondary mt-4">Weiter gehts!
         </button>
       </div>
     </div>
