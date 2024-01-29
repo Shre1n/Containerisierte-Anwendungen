@@ -78,6 +78,7 @@ app.get("/modules", checkAccessId(), async (req, res) => {
     console.log(result);
 
     const returnData: Module[] = [];
+    // @ts-expect-error linter wants this
     for (const row of result) {
       const module: Module = {
         id: Number(row.module_id),
@@ -187,20 +188,25 @@ app.post("/module", checkAccessId(), async (req, res) => {
   try {
     const result = await runQuery(query, data);
 
-    const moduleId = result.insertId;
-
-    const findUserIdQuery = "SELECT id FROM user_table WHERE accessId = ?;";
-    const userIdResult = await runQuery(findUserIdQuery, [accessId]);
-    const userId = userIdResult[0].id;
+    if ("insertId" in result) {
+      const moduleId = result.insertId;
 
 
-    const insertUserModuleQuery = "INSERT INTO user_module (user_id, module_id) VALUES (?, ?);";
-    const userModuleData = [userId, moduleId];
-    await runQuery(insertUserModuleQuery, userModuleData);
+      const findUserIdQuery = "SELECT id FROM user_table WHERE accessId = ?;";
+      const userIdResult = await runQuery(findUserIdQuery, [accessId]);
+      const userId = userIdResult[0].id;
 
-    res.status(201).send({
-      message: `Module created`
-    });
+
+      const insertUserModuleQuery = "INSERT INTO user_module (user_id, module_id) VALUES (?, ?);";
+      const userModuleData = [userId, moduleId];
+      await runQuery(insertUserModuleQuery, userModuleData);
+
+      res.status(201).send({
+        message: `Module created`
+      });
+    } else {
+      throw Error()
+    }
   } catch (e) {
     res.status(500).send({
       message: 'Database Error'
@@ -220,7 +226,7 @@ app.delete("/module/:id", checkAccessId(), async (req, res) => {
   const data = [req.session.accessId, id];
 
   try {
-    const result = await runQuery(query, data);
+    await runQuery(query, data);
 
     res.status(201).send({
       message: `Module deleted`
@@ -239,7 +245,7 @@ app.get("/getAccessId", async (req, res) => {
   const query: string = "INSERT INTO user_table (accessId) VALUES (?);";
   const data = [accessId];
   try {
-    const result = await runQuery(query, data);
+    await runQuery(query, data);
 
     req.session.accessId = accessId;
     res.status(200).send({
@@ -258,9 +264,9 @@ app.post("/setAccessId", async (req, res) => {
   const query: string = "SELECT * FROM user_table WHERE accessId = ?;";
   const data = [accessId];
   try {
-    const result = await runQuery(query, data);
+    const result= await runQuery(query, data);
 
-    if (result.length !== 1) {
+    if ("length" in result && result.length !== 1) {
       res.status(400).send({
         message: 'The AccessId could not be found.'
       });
@@ -298,7 +304,7 @@ function checkAccessId() {
 }
 
 
-async function runQuery(query: string, data: any[]): Promise<any> {
+async function runQuery(query: string, data: unknown[]): Promise<mysql.OkPacket | mysql.RowDataPacket[] | mysql.ResultSetHeader[] | mysql.RowDataPacket[][] | mysql.OkPacket[] | mysql.ProcedureCallPacket> {
   return new Promise((resolve, reject) => {
     db.query(query, data, (err: mysql.QueryError, result) => {
       if (err) {
