@@ -64,7 +64,7 @@ app.listen(8081, () => {
 app.use(express.json());
 
 
-app.get("/api/modules", checkAccessId(), async (req, res) => {
+app.get("/modules", checkAccessId(), async (req, res) => {
 
   const query: string = `SELECT *
                           FROM user_module
@@ -103,7 +103,7 @@ app.get("/api/modules", checkAccessId(), async (req, res) => {
 
 
 
-app.get("/api/module/:id", checkAccessId(), async (req, res) => {
+app.get("/module/:id", checkAccessId(), async (req, res) => {
   const id = Number(req.params.id);
 
   const query: string = `SELECT module.module_id, module.module_name, module.crp, module.weight, module.grade 
@@ -143,7 +143,7 @@ app.get("/api/module/:id", checkAccessId(), async (req, res) => {
   }
 });
 
-app.put("/api/module/:id", checkAccessId(), async (req, res) => {
+app.put("/module/:id", checkAccessId(), async (req, res) => {
 
   const id = Number(req.params.id);
   const moduleCrp = Number(req.body.moduleCrp);
@@ -173,7 +173,7 @@ app.put("/api/module/:id", checkAccessId(), async (req, res) => {
   }
 });
 
-app.post("/api/module", checkAccessId(), async (req, res) => {
+app.post("/module", checkAccessId(), async (req, res) => {
 
   const moduleCrp = Number(req.body.moduleCrp);
   const moduleGrade = Number(req.body.moduleGrade);
@@ -209,7 +209,7 @@ app.post("/api/module", checkAccessId(), async (req, res) => {
 });
 
 
-app.delete("/api/module/:id", checkAccessId(), async (req, res) => {
+app.delete("/module/:id", checkAccessId(), async (req, res) => {
 
   const id = Number(req.params.id);
 
@@ -233,7 +233,7 @@ app.delete("/api/module/:id", checkAccessId(), async (req, res) => {
   }
 });
 
-app.get("/api/getAccessId", async (req, res) => {
+app.get("/getAccessId", async (req, res) => {
 
   const accessId = await getRandomString();
   const query: string = "INSERT INTO user_table (accessId) VALUES (?);";
@@ -253,7 +253,7 @@ app.get("/api/getAccessId", async (req, res) => {
   }
 })
 
-app.post("/api/setAccessId", async (req, res) => {
+app.post("/setAccessId", async (req, res) => {
   const accessId = req.body.accessId;
   const query: string = "SELECT * FROM user_table WHERE accessId = ?;";
   const data = [accessId];
@@ -279,7 +279,7 @@ app.post("/api/setAccessId", async (req, res) => {
 })
 
 
-app.get("/api/checkAccessId", checkAccessId(), (req, res) => {
+app.get("/checkAccessId", checkAccessId(), (req, res) => {
   res.sendStatus(200);
 })
 
