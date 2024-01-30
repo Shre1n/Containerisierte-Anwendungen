@@ -68,7 +68,7 @@ security_scan_client:
     - cd client
   script:
     - npm install
-    - npm install -g retire
+    - npm install retire
     - retire
 
 security_scan_server:
@@ -80,5 +80,5 @@ security_scan_server:
     - cd server
   script:
     - npm install
-    - npm install -g owasp-dependency-check
-    - dependency-check --project "$CI_PROJECT_DIR" --scan .
+    - npm install retire
+    - retire
