@@ -68,8 +68,8 @@ security_scan_client:
     - cd client
   script:
     - npm install
-    - npm install -g retire
-    - retire
+    - npm install -g npm-check
+    - npm-check
 
 security_scan_server:
   stage: security_scan_server
@@ -80,5 +80,5 @@ security_scan_server:
     - cd server
   script:
     - npm install
-    - npm install -g retire
-    - retire
+    - npm install -g npm-check
+    - npm-check
