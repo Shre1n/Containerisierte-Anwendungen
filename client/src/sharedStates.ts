@@ -12,3 +12,12 @@ export const sharedStates: SharedStates = reactive({
     formVisible: false,
     showList: undefined
 })
+
+
+export const editInputs = reactive({
+    moduleId: 0,
+    moduleName: "",
+    moduleCrp: 0,
+    moduleGrade: 0,
+    moduleWeight: 0
+});

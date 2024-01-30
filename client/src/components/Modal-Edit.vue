@@ -1,42 +1,32 @@
 <script setup lang="ts">
-import { sharedStates } from "@/sharedStates";
-import { reactive } from "vue";
 
 
-function saveChanges() {
+import { editInputs, sharedStates } from "@/sharedStates";
+import type { PutModule } from "@/interfaces/PutModule";
+import { postModule, putModule, renderModuleList } from "@/database.service";
+
+
+async function saveChanges() {
   sharedStates.formVisible = false;
-  const index = sharedStates.moduleList.findIndex(module => module.id === editInputs.moduleId);
-
-  if (index !== -1) {
-    sharedStates.moduleList[index] = {
-      ...sharedStates.moduleList[index],
-      moduleName: editInputs.moduleName,
-      moduleWeight: editInputs.moduleWeight,
-      moduleCrp: editInputs.moduleCrp,
-      moduleGrade: editInputs.moduleGrade,
-    };
-  } else {
-    console.log(`Module not found.`);
+  const updateData: PutModule = {
+    moduleCrp: editInputs.moduleCrp,
+    moduleGrade: editInputs.moduleGrade,
+    moduleName: editInputs.moduleName,
+    moduleWeight: editInputs.moduleWeight
   }
-
-  console.log(sharedStates.moduleList)
+  if (editInputs.moduleId === 0) {
+    await postModule(updateData);
+  } else {
+    await putModule(editInputs.moduleId, updateData);
+  }
+  await renderModuleList();
 }
-
-const editInputs = reactive({
-  moduleId: 0,
-  moduleName: "",
-  moduleCrp: 0,
-  moduleGrade: 0,
-  moduleWeight: 0
-});
-
-
 
 </script>
 
 <template>
   <div class="justify-content-center d-flex">
-    <form @submit.prevent="saveChanges" v-show="sharedStates.formVisible" style="max-width: 10em">
+    <form @submit.prevent="saveChanges" v-show="sharedStates.formVisible" style="max-width: 20em">
       <div class="mb-3">
         <label for="modulNameInput" class="form-label">Modul Name</label>
         <input v-model="editInputs.moduleName" type="text" class="form-control" id="modulNameInput">

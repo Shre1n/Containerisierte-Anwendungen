@@ -1,22 +1,15 @@
 <script setup lang="ts">
 
-import {sharedStates} from "@/sharedStates";
-import {onMounted, reactive} from "vue";
-import {deleteModule, getModule, postModule, putModule, renderModuleList} from "@/database.service";
-import type {PutModule} from "@/interfaces/PutModule";
+import { editInputs, sharedStates } from "@/sharedStates";
+import { computed, onMounted } from "vue";
+import { renderModuleList } from "@/database.service";
 import type {Module} from "@/interfaces/Module";
+import ListEntrys from "@/components/ListEntrys.vue";
+import ModalEdit from "@/components/Modal-Edit.vue";
 
 onMounted(async () => {
   await renderModuleList();
 })
-
-const editInputs = reactive({
-  moduleId: 0,
-  moduleName: "",
-  moduleCrp: 0,
-  moduleGrade: 0,
-  moduleWeight: 0
-});
 
 
 function triggerAddModuleModal() {
@@ -30,45 +23,7 @@ function triggerAddModuleModal() {
 }
 
 
-async function edit(id: number) {
-  const module = await getModule(id);
-
-  if (!module) {
-    console.log("module Not found");
-    return
-  }
-  editInputs.moduleId = module.id;
-  editInputs.moduleName = module.moduleName;
-  editInputs.moduleCrp = module.moduleCrp;
-  editInputs.moduleGrade = module.moduleGrade;
-  editInputs.moduleWeight = module.moduleWeight;
-
-  sharedStates.formVisible = true;
-
-}
-
-async function remove(id: number) {
-  await deleteModule(id);
-  await renderModuleList();
-}
-
-async function saveChanges() {
-  sharedStates.formVisible = false;
-  const updateData: PutModule = {
-    moduleCrp: editInputs.moduleCrp,
-    moduleGrade: editInputs.moduleGrade,
-    moduleName: editInputs.moduleName,
-    moduleWeight: editInputs.moduleWeight
-  }
-  if (editInputs.moduleId === 0) {
-    await postModule(updateData);
-  } else {
-    await putModule(editInputs.moduleId, updateData);
-  }
-  await renderModuleList();
-}
-
-const calculateAverageGrade = (): string => {
+const calculateAverageGrade = computed(()=>{
   const moduleList: Module[] = sharedStates.moduleList;
   const passedModules: Module[] = moduleList.filter((module) => module.moduleGrade >= 50);
   if (passedModules.length === 0) {
@@ -79,7 +34,7 @@ const calculateAverageGrade = (): string => {
   const averageGrade = totalGrade / passedModules.length;
 
   return averageGrade.toFixed(1)
-};
+})
 
 </script>
 
@@ -103,52 +58,14 @@ const calculateAverageGrade = (): string => {
         </div>
 
 
-        <div class="justify-content-center d-flex">
-          <form @submit.prevent="saveChanges" v-show="sharedStates.formVisible" style="max-width: 20em">
-            <div class="mb-3">
-              <label for="modulNameInput" class="form-label">Modul Name</label>
-              <input v-model="editInputs.moduleName" type="text" class="form-control" id="modulNameInput">
-            </div>
-            <div class="mb-3">
-              <label for="modulCrpInput" class="form-label">Modul Crp</label>
-              <input v-model="editInputs.moduleCrp" type="number" class="form-control" id="modulCrpInput">
-            </div>
-            <div class="mb-3">
-              <label for="modulGradeInput" class="form-label">Modul Grade:</label>
-              <input v-model="editInputs.moduleGrade" type="number" class="form-control" id="modulGradeInput">
-            </div>
-            <div class="mb-3">
-              <label for="modulWeightInput" class="form-label">Modul Weight:</label>
-              <input v-model="editInputs.moduleWeight" type="number" class="form-control" id="modulWeightInput">
-            </div>
-            <button class="btn btn-primary" type="submit">Übernehmen</button>
-          </form>
+        <ModalEdit/>
+
+        <div class="container">
+          <ListEntrys/>
         </div>
-        <table id="master-head" class="table mt-4">
-          <thead class="thead-dark">
-          <tr>
-            <th>Module</th>
-            <th>Crp</th>
-            <th>Note</th>
-            <th>Gewichtung</th>
-            <th>Editieren & Löschen</th>
-          </tr>
-          </thead>
-          <tbody>
-          <tr v-for="module in sharedStates.moduleList" :key="module.id">
-            <td>{{ module.moduleName }}</td>
-            <td>{{ module.moduleCrp }}</td>
-            <td>{{ module.moduleGrade }}%</td>
-            <td>{{ module.moduleWeight }}</td>
-            <td>
-              <button class="btn btn-primary mx-1" @click="edit(module.id)">Editieren</button>
-              <button class="btn btn-danger mx-1" @click="remove(module.id)">Löschen</button>
-            </td>
-          </tr>
-          </tbody>
-        </table>
-        <div v-if="calculateAverageGrade() !== ''" class="row justify-content-center mt-4">
-            <h5 class="my-4">Durchschnittsnote: {{ calculateAverageGrade()}}%</h5>
+
+        <div v-if="calculateAverageGrade !== ''" class="row justify-content-center mt-4">
+            <h5 class="my-4">Durchschnittsnote: {{ calculateAverageGrade}}%</h5>
         </div>
       </div>
     </div>
