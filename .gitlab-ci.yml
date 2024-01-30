@@ -6,6 +6,7 @@ stages:
   - server_start
   - performance_test
   - security_scan_client
+  - security_scan_server
 
 eslint_client:
   stage: lint_client
