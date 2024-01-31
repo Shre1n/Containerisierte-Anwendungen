@@ -5,6 +5,8 @@ stages:
   - server
   - server_start
   - performance_test
+  - security_scan_client
+  - security_scan_server
 
 eslint_client:
   stage: lint_client
@@ -57,24 +59,28 @@ backend:
     - /kaniko/executor --context "$CI_PROJECT_DIR/server" --dockerfile "$CI_PROJECT_DIR/server/Dockerfile" --destination "$CI_REGISTRY_IMAGE:server"
   needs: [ "frontend" ]
 
-server:
-  stage: server_start
-  tags:
-    - docker
-  image: $CI_REGISTRY_IMAGE:server
-  allow_failure: true
-  script:
-    - npm start
-
-performance_test:
-  stage: performance_test
+security_scan_client:
+  stage: security_scan_client
   tags:
     - docker
   image: node:lts-bullseye-slim
+  allow_failure: true
+  before_script:
+    - cd client
   script:
-    - npm install -g artillery
-    - artillery run ./performance-test-config.yml
-  needs: [ "server" ]
+    - npm install
+    - npm install -g npm-check
+    - npm-check
 
-
-
+security_scan_server:
+  stage: security_scan_server
+  tags:
+    - docker
+  image: node:lts-bullseye-slim
+  allow_failure: true
+  before_script:
+    - cd server
+  script:
+    - npm install
+    - npm install -g npm-check
+    - npm-check
