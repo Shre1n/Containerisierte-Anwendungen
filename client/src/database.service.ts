@@ -55,6 +55,18 @@ export const deleteModule = async (id: number) => {
   }
 }
 
+export const deleteModules = async () => {
+  try {
+    const res = await fetch(`/api/modules`, {
+      method: "DELETE"
+    });
+    const data = await res.json();
+    console.log("WOWW:", data.message)
+  } catch (e) {
+    console.error("Error:", e)
+  }
+}
+
 export const postModule = async (postData: PutModule) => {
   try {
     const res = await fetch(`/api/module`, {
@@ -115,6 +127,18 @@ export const checkAccessId = async () => {
   try {
     const res = await fetch(`/api/checkAccessId`);
     return res.status === 200;
+  } catch (e) {
+    console.error("Error:", e)
+  }
+}
+
+export const exitAccessId = async () => {
+  try {
+    const res = await fetch(`/api/accessid`, {
+      method: "DELETE"
+    });
+    const data = await res.json();
+    console.log("WOWW:", data.message)
   } catch (e) {
     console.error("Error:", e)
   }
