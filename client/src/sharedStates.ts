@@ -13,7 +13,10 @@ export const sharedStates: SharedStates = reactive({
     showList: undefined
 })
 
-
+export const accessSiteInputs = reactive({
+    getText: '',
+    postText: ''
+})
 export const editInputs = reactive({
     moduleId: 0,
     moduleName: "",

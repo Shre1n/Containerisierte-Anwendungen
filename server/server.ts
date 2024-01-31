@@ -102,8 +102,6 @@ app.get("/modules", checkAccessId(), async (req, res) => {
 });
 
 
-
-
 app.get("/module/:id", checkAccessId(), async (req, res) => {
   const id = Number(req.params.id);
 
@@ -264,7 +262,7 @@ app.post("/setAccessId", async (req, res) => {
   const query: string = "SELECT * FROM user_table WHERE accessId = ?;";
   const data = [accessId];
   try {
-    const result= await runQuery(query, data);
+    const result = await runQuery(query, data);
 
     if ("length" in result && result.length !== 1) {
       res.status(400).send({
@@ -288,6 +286,41 @@ app.post("/setAccessId", async (req, res) => {
 app.get("/checkAccessId", checkAccessId(), (req, res) => {
   res.sendStatus(200);
 })
+
+
+app.delete("/modules", checkAccessId(), async (req, res) => {
+
+  const accessId = req.session.accessId;
+
+  const query: string = `DELETE module FROM module
+                          JOIN user_module ON user_module.module_id = module.module_id
+                          JOIN user_table ON user_table.id = user_module.user_id
+                          WHERE user_table.accessId = ?;`;
+  const data = [accessId];
+
+  try {
+    await runQuery(query, data);
+
+    res.status(201).send({
+      message: `Modules deleted`
+    });
+  } catch (e) {
+    console.log(e);
+    res.status(500).send({
+      message: 'Database Error'
+    });
+  }
+});
+
+
+app.delete("/accessid", checkAccessId(), async (req, res) => {
+
+  req.session.accessId = undefined;
+
+  res.status(200).send({
+    message: `AccessId is set to undefined`
+  });
+});
 
 
 function checkAccessId() {
